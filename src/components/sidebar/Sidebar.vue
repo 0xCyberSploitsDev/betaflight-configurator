@@ -44,6 +44,17 @@
                 size="xs"
             />
         </UTooltip>
+        <UTooltip :text="$t('aiOpenPanel')" :delay-duration="300">
+            <UButton
+                icon="i-lucide-sparkles"
+                :variant="aiStore.isOpen ? 'soft' : 'ghost'"
+                :color="aiStore.isOpen ? 'primary' : 'neutral'"
+                square
+                :aria-label="$t('aiOpenPanel')"
+                @click="aiStore.togglePanel()"
+                size="xs"
+            />
+        </UTooltip>
         <UTooltip :text="$t('logActionShow')" :delay-duration="300">
             <UButton
                 :icon="sidebarItems.find((item) => item.key === 'log').icon"
@@ -70,6 +81,7 @@ import { sidebarItems, isItemVisible } from "./sidebar_items.js";
 import { useConnectionStore } from "@/stores/connection";
 import { useNavigationStore } from "@/stores/navigation";
 import { useAuthStore } from "@/stores/auth";
+import { useAiStore } from "@/stores/ai";
 import { vueTabState } from "@/js/vue_tab_mounter.js";
 import { switchTab } from "@/js/tab_switch.js";
 import GUI from "@/js/gui.js";
@@ -85,6 +97,7 @@ import LogDialog from "@/components/dialogs/LogDialog.vue";
 const { t } = useTranslation();
 const connectionStore = useConnectionStore();
 const authStore = useAuthStore();
+const aiStore = useAiStore();
 const sidebarExpanded = inject("sidebarExpanded", ref(true));
 const isCompact = computed(() => !sidebarExpanded.value);
 const navMenuUi = computed(() => {

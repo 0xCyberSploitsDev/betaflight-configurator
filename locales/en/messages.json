@@ -9300,5 +9300,97 @@
     },
     "preflightForecastWeather": {
         "message": "Weather"
+    },
+    "aiPanelTitle": {
+        "message": "Assistant",
+        "description": "Title of the AI assistant side panel"
+    },
+    "aiOpenPanel": {
+        "message": "Open assistant",
+        "description": "Tooltip for the button that opens the AI assistant panel"
+    },
+    "aiClosePanel": {
+        "message": "Close assistant",
+        "description": "Tooltip for the button that closes the AI assistant panel"
+    },
+    "aiClearChat": {
+        "message": "Clear chat",
+        "description": "Tooltip for clearing the AI assistant conversation"
+    },
+    "aiSettingsTitle": {
+        "message": "Assistant Settings",
+        "description": "Title of the AI assistant settings dialog"
+    },
+    "aiOpenSettings": {
+        "message": "Open settings",
+        "description": "Button to open AI settings"
+    },
+    "aiNeedsApiKey": {
+        "message": "Add an API key to start chatting with the assistant.",
+        "description": "Shown when no API key is configured"
+    },
+    "aiEmptyHint": {
+        "message": "Ask anything about Betaflight or your connected flight controller.",
+        "description": "Empty state hint in the AI panel"
+    },
+    "aiThinking": {
+        "message": "Thinking…",
+        "description": "Shown while the AI is generating a response"
+    },
+    "aiInputPlaceholder": {
+        "message": "Ask the assistant… (Enter to send, Shift+Enter for newline)",
+        "description": "Placeholder for the chat input"
+    },
+    "aiSend": {
+        "message": "Send",
+        "description": "AI chat send button"
+    },
+    "aiCancel": {
+        "message": "Cancel",
+        "description": "AI chat cancel button"
+    },
+    "aiProvider": {
+        "message": "Provider",
+        "description": "AI provider selector label"
+    },
+    "aiAnthropicApiKey": {
+        "message": "Anthropic API key",
+        "description": "Anthropic API key input label"
+    },
+    "aiOpenaiApiKey": {
+        "message": "OpenAI API key",
+        "description": "OpenAI API key input label"
+    },
+    "aiModel": {
+        "message": "Model",
+        "description": "AI model selector label"
+    },
+    "aiKeyStorageWarning": {
+        "message": "Your API key is stored in this browser's local storage. Do not use this on a shared computer.",
+        "description": "Warning shown next to the API key field"
+    },
+    "aiSystemPromptOverride": {
+        "message": "System prompt override (optional)",
+        "description": "Label for the optional system prompt override textarea"
+    },
+    "aiSystemPromptDefault": {
+        "message": "Leave blank to use the default Betaflight assistant prompt.",
+        "description": "Placeholder for the system prompt override textarea"
+    },
+    "aiModelHintRecommended": {
+        "message": "Suggested",
+        "description": "Label preceding the recommended model chips below the model input"
+    },
+    "aiResizePanel": {
+        "message": "Drag to resize the assistant panel",
+        "description": "Accessible label for the panel resize handle"
+    },
+    "aiRetry": {
+        "message": "Retry",
+        "description": "Retry the last failed message"
+    },
+    "aiDismissError": {
+        "message": "Dismiss",
+        "description": "Dismiss the error banner"
     }
 }

@@ -1,6 +1,10 @@
 <template>
     <UApp :tooltip="{ delayDuration: 100 }" portal="#main-wrapper">
-        <div class="app-wrapper">
+        <div
+            class="app-wrapper"
+            :class="{ 'app-wrapper--ai-open': aiStore.isOpen }"
+            :style="{ '--ai-panel-width': aiStore.settings.panelWidth + 'px' }"
+        >
             <div id="background" v-if="isMobileSidebarOpen" aria-hidden="true" @click="isRevealed = false"></div>
             <div id="side_menu_swipe"></div>
             <div class="mobile-topbar" :class="{ 'mobile-topbar--hidden': topbarHidden }">
@@ -56,6 +60,7 @@
             </div>
         </div>
         <GlobalDialogs />
+        <ChatPanel />
     </UApp>
 </template>
 
@@ -65,6 +70,10 @@ import { useMediaQuery } from "@vueuse/core";
 import ConnectButton from "./components/port-picker/ConnectButton.vue";
 import GlobalDialogs from "./components/dialogs/GlobalDialogs.vue";
 import Sidebar from "./components/sidebar/Sidebar.vue";
+import ChatPanel from "./components/ai/ChatPanel.vue";
+import { useAiStore } from "./stores/ai";
+
+const aiStore = useAiStore();
 import FCModule from "./js/fc.js";
 import MSPModule from "./js/msp.js";
 import PortUsageModule from "./js/port_usage.js";
@@ -215,6 +224,20 @@ watch(
     flex-direction: column;
     height: 100%;
     min-height: 0; /* Allow flex children to shrink below content size */
+    transition: padding-right 0.2s ease;
+}
+
+/* Reserve horizontal space on the right when the AI assistant panel is open
+   so the panel sits beside the app instead of overlapping it.
+   Width tracks the user-resizable panel via the --ai-panel-width CSS variable. */
+.app-wrapper--ai-open {
+    padding-right: var(--ai-panel-width, 480px);
+}
+
+@media (max-width: 600px) {
+    .app-wrapper--ai-open {
+        padding-right: 0; /* Panel takes full width on mobile, no reserved space. */
+    }
 }
 
 /* Legacy cache node is required by some code paths but should never be visible in Vue UI */
