@@ -181,11 +181,13 @@ export function useAiChat() {
                     turn.toolUses.map(async (use) => {
                         const result = await executeTool(use.name, use.input);
                         const isError = Boolean(result && typeof result === "object" && "error" in result);
+                        // Schema must match Anthropic's tool_result content block exactly —
+                        // any extra fields trigger "Extra inputs are not permitted". The UI
+                        // already gets the tool name from the paired tool_use block.
                         return {
                             type: "tool_result",
                             tool_use_id: use.id,
                             content: typeof result === "string" ? result : JSON.stringify(result),
-                            _toolName: use.name,
                             ...(isError ? { is_error: true } : {}),
                         };
                     }),

@@ -23,6 +23,9 @@
     "tauri:dev": "node scripts/check-tauri-prereqs.mjs && cross-env TAURI_DEV=1 tauri dev",
     "tauri:build": "node scripts/check-tauri-prereqs.mjs && tauri build",
     "tauri:prebuild": "node scripts/sync-tauri-version.mjs && vite build",
+    "cf:dev": "wrangler dev",
+    "cf:build": "vite build",
+    "cf:deploy": "vite build && wrangler deploy",
     "format": "prettier --write {src,test}/**/*.{js,vue,css,less}",
     "storybook": "storybook dev -p 6006",
     "prepare": "husky"
@@ -110,6 +113,7 @@
     "run-script-os": "^1.1.6",
     "vite": "^7.3.2",
     "vite-plugin-mkcert": "^1.17.9",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.93.0"
   }
 }
