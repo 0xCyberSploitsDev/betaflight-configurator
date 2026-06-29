@@ -89,6 +89,8 @@
                         :key="m.id"
                         :message="m"
                         :tool-result-index="toolResultIndex"
+                        @confirm-tool="onConfirmTool"
+                        @reject-tool="onRejectTool"
                     />
                     <div v-if="ai.isStreaming && !hasLiveContent" class="ai-panel__thinking">
                         <UIcon name="i-lucide-loader-2" class="animate-spin" />
@@ -238,6 +240,16 @@ async function sendSuggestion(text) {
     scrollToBottom();
 }
 
+async function onConfirmTool(_toolUseId) {
+    await chat.confirmPendingTool();
+    scrollToBottom();
+}
+
+async function onRejectTool(_toolUseId) {
+    await chat.rejectPendingTool();
+    scrollToBottom();
+}
+
 const canRetry = computed(() => {
     if (ai.isStreaming) return false;
     if (!ai.lastErrorRetryable && ai.lastErrorKind !== "auth" && ai.lastErrorKind !== "model_not_found") {
@@ -274,7 +286,7 @@ watch(() => ai.messages.length, scrollToBottom);
 
 const isResizing = ref(false);
 
-function startResize(event) {
+function startResize(_event) {
     isResizing.value = true;
     const onMove = (e) => {
         const x = e.touches?.[0]?.clientX ?? e.clientX;

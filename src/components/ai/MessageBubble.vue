@@ -11,6 +11,10 @@
             :result="call.result"
             :is-error="call.isError"
             :pending="call.pending"
+            :requires-confirmation="call.requiresConfirmation"
+            :confirmation-description="call.confirmationDescription"
+            @confirm="$emit('confirmTool', call.id)"
+            @reject="$emit('rejectTool', call.id)"
         />
     </div>
 </template>
@@ -25,6 +29,8 @@ const props = defineProps({
     message: { type: Object, required: true },
     toolResultIndex: { type: Object, required: true },
 });
+
+defineEmits(["confirmTool", "rejectTool"]);
 
 const safeContent = computed(() => {
     const c = props.message?.content;
@@ -49,7 +55,6 @@ const renderedHtml = computed(() => {
         return DOMPurify.sanitize(html, { ADD_ATTR: ["target", "rel"] });
     } catch (e) {
         console.warn("[AI] Markdown render failed, falling back to plain text", e);
-        // Escape to plain text so we never leak unrendered HTML into v-html.
         return textContent.value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 });
@@ -60,6 +65,19 @@ const toolCalls = computed(() => {
         .filter((c) => c && c.type === "tool_use" && typeof c.name === "string")
         .map((use) => {
             const result = props.toolResultIndex?.[use.id];
+            let requiresConfirmation = false;
+            let confirmationDescription = "";
+            if (result?.content && typeof result.content === "string") {
+                try {
+                    const parsed = JSON.parse(result.content);
+                    if (parsed._awaitingConfirmation) {
+                        requiresConfirmation = true;
+                        confirmationDescription = parsed.description || "";
+                    }
+                } catch {
+                    // not JSON, ignore
+                }
+            }
             return {
                 id: use.id,
                 name: use.name,
@@ -67,6 +85,8 @@ const toolCalls = computed(() => {
                 result: result?.content,
                 isError: Boolean(result?.is_error),
                 pending: !result,
+                requiresConfirmation,
+                confirmationDescription,
             };
         });
 });
@@ -213,7 +233,7 @@ const toolCalls = computed(() => {
 .ai-bubble__md :deep(hr) {
     border: 0;
     border-top: 1px solid var(--ui-border, #334155);
-    margin: 0.5rem 0;
+    margin: 0.25rem 0 0.5rem;
 }
 .ai-bubble__md :deep(table) {
     border-collapse: collapse;

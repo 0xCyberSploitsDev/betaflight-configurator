@@ -21,6 +21,7 @@ function safeJsonParse(text) {
 const PROVIDER_LABEL = {
     anthropic: "Anthropic",
     openai: "OpenAI",
+    "openai-compatible": "OpenAI Compatible",
 };
 
 const SETTINGS_HINT = "Open AI Settings (gear icon in the panel header) to update.";

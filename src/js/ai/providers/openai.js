@@ -42,31 +42,43 @@ function buildBody({ model, system, messages, tools, stream }) {
 }
 
 function authHeaders(apiKey) {
-    return {
+    const headers = {
         "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`,
     };
+    if (apiKey) {
+        headers.authorization = `Bearer ${apiKey}`;
+    }
+    return headers;
 }
 
-export async function callOpenAi({ apiKey, model, system, messages, tools, signal }) {
+export async function callOpenAi({
+    apiKey,
+    model,
+    system,
+    messages,
+    tools,
+    signal,
+    baseUrl = API_URL,
+    providerName = PROVIDER,
+}) {
     if (import.meta.env?.DEV) {
         console.debug("[AI/OpenAI] →", { model, roleUsed: systemRoleFor(model), streaming: false });
     }
     let response;
     try {
-        response = await fetch(API_URL, {
+        response = await fetch(baseUrl, {
             method: "POST",
             headers: authHeaders(apiKey),
             body: JSON.stringify(buildBody({ model, system, messages, tools, stream: false })),
             signal,
         });
     } catch (cause) {
-        throw humanizeNetworkError(PROVIDER, cause);
+        throw humanizeNetworkError(providerName, cause);
     }
 
     if (!response.ok) {
         const errorText = await response.text().catch(() => "");
-        throw humanizeHttpError(PROVIDER, response, errorText);
+        throw humanizeHttpError(providerName, response, errorText);
     }
 
     let data;
@@ -100,25 +112,34 @@ export async function callOpenAi({ apiKey, model, system, messages, tools, signa
 /**
  * Streaming generator. Same event vocabulary as streamAnthropic.
  */
-export async function* streamOpenAi({ apiKey, model, system, messages, tools, signal }) {
+export async function* streamOpenAi({
+    apiKey,
+    model,
+    system,
+    messages,
+    tools,
+    signal,
+    baseUrl = API_URL,
+    providerName = PROVIDER,
+}) {
     if (import.meta.env?.DEV) {
         console.debug("[AI/OpenAI] →", { model, roleUsed: systemRoleFor(model), streaming: true });
     }
     let response;
     try {
-        response = await fetch(API_URL, {
+        response = await fetch(baseUrl, {
             method: "POST",
             headers: { ...authHeaders(apiKey), accept: "text/event-stream" },
             body: JSON.stringify(buildBody({ model, system, messages, tools, stream: true })),
             signal,
         });
     } catch (cause) {
-        throw humanizeNetworkError(PROVIDER, cause);
+        throw humanizeNetworkError(providerName, cause);
     }
 
     if (!response.ok) {
         const errorText = await response.text().catch(() => "");
-        throw humanizeHttpError(PROVIDER, response, errorText);
+        throw humanizeHttpError(providerName, response, errorText);
     }
     if (!response.body) {
         throw humanizeNetworkError(PROVIDER, new Error("Streaming response had no body"));
@@ -200,6 +221,6 @@ export async function* streamOpenAi({ apiKey, model, system, messages, tools, si
     } catch (cause) {
         if (cause?.name === "AbortError") throw cause;
         if (cause?.kind) throw cause;
-        throw humanizeNetworkError(PROVIDER, cause);
+        throw humanizeNetworkError(providerName, cause);
     }
 }

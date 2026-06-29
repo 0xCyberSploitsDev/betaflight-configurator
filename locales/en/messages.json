@@ -9488,5 +9488,13 @@
     "aiDismissError": {
         "message": "Dismiss",
         "description": "Dismiss the error banner"
+    },
+    "aiOpenaiCompatibleBaseUrl": {
+        "message": "API Base URL",
+        "description": "OpenAI Compatible API base URL input label"
+    },
+    "aiOpenaiCompatibleApiKey": {
+        "message": "API key (optional)",
+        "description": "OpenAI Compatible API key input label"
     }
 }

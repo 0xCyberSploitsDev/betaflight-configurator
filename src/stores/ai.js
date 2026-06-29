@@ -9,6 +9,9 @@ const DEFAULT_SETTINGS = {
     anthropicModel: "claude-sonnet-4-6",
     openaiApiKey: "",
     openaiModel: "gpt-5",
+    openaiCompatibleApiKey: "",
+    openaiCompatibleModel: "qwen2.5-coder:7b",
+    openaiCompatibleBaseUrl: "http://localhost:11434",
     systemPromptOverride: "",
     panelWidth: 480,
 };
@@ -47,6 +50,9 @@ export const useAiStore = defineStore("ai", () => {
     const lastErrorRetryable = ref(false);
     const settingsDialogOpen = ref(false);
 
+    // Pending tool confirmation: null or { toolName, toolUseId, input, description }
+    const pendingConfirmation = ref(null);
+
     const isConfigured = computed(() => {
         if (settings.value.provider === "anthropic") {
             return Boolean(settings.value.anthropicApiKey);
@@ -54,16 +60,25 @@ export const useAiStore = defineStore("ai", () => {
         if (settings.value.provider === "openai") {
             return Boolean(settings.value.openaiApiKey);
         }
+        if (settings.value.provider === "openai-compatible") {
+            return Boolean(settings.value.openaiCompatibleBaseUrl);
+        }
         return false;
     });
 
-    const activeModel = computed(() =>
-        settings.value.provider === "anthropic" ? settings.value.anthropicModel : settings.value.openaiModel,
-    );
+    const activeModel = computed(() => {
+        if (settings.value.provider === "anthropic") return settings.value.anthropicModel;
+        if (settings.value.provider === "openai") return settings.value.openaiModel;
+        if (settings.value.provider === "openai-compatible") return settings.value.openaiCompatibleModel;
+        return "";
+    });
 
-    const activeApiKey = computed(() =>
-        settings.value.provider === "anthropic" ? settings.value.anthropicApiKey : settings.value.openaiApiKey,
-    );
+    const activeApiKey = computed(() => {
+        if (settings.value.provider === "anthropic") return settings.value.anthropicApiKey;
+        if (settings.value.provider === "openai") return settings.value.openaiApiKey;
+        if (settings.value.provider === "openai-compatible") return settings.value.openaiCompatibleApiKey;
+        return "";
+    });
 
     function saveSettings(next) {
         settings.value = { ...settings.value, ...next };
@@ -131,6 +146,14 @@ export const useAiStore = defineStore("ai", () => {
         settingsDialogOpen.value = false;
     }
 
+    function setPendingConfirmation(pc) {
+        pendingConfirmation.value = pc;
+    }
+
+    function clearPendingConfirmation() {
+        pendingConfirmation.value = null;
+    }
+
     return {
         settings,
         messages,
@@ -140,6 +163,7 @@ export const useAiStore = defineStore("ai", () => {
         lastErrorKind,
         lastErrorRetryable,
         settingsDialogOpen,
+        pendingConfirmation,
         isConfigured,
         activeModel,
         activeApiKey,
@@ -153,5 +177,7 @@ export const useAiStore = defineStore("ai", () => {
         togglePanel,
         openSettings,
         closeSettings,
+        setPendingConfirmation,
+        clearPendingConfirmation,
     };
 });

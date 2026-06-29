@@ -57,6 +57,38 @@
                     </div>
                 </div>
 
+                <div v-if="form.provider === 'openai-compatible'" class="flex flex-col gap-2">
+                    <label class="text-sm font-semibold">{{ $t("aiOpenaiCompatibleBaseUrl") }}</label>
+                    <UInput
+                        v-model="form.openaiCompatibleBaseUrl"
+                        size="sm"
+                        placeholder="http://localhost:11434"
+                        autocomplete="off"
+                    />
+                    <label class="text-sm font-semibold mt-2">{{ $t("aiOpenaiCompatibleApiKey") }}</label>
+                    <UInput
+                        v-model="form.openaiCompatibleApiKey"
+                        type="password"
+                        size="sm"
+                        placeholder="optional"
+                        autocomplete="off"
+                    />
+                    <label class="text-sm font-semibold mt-2">{{ $t("aiModel") }}</label>
+                    <UInput v-model="form.openaiCompatibleModel" size="sm" placeholder="qwen2.5-coder:7b" />
+                    <div class="ai-model-hint">
+                        <span>{{ $t("aiModelHintRecommended") }}:</span>
+                        <button
+                            v-for="m in openaiCompatibleRecommended"
+                            :key="m"
+                            type="button"
+                            class="ai-model-hint__chip"
+                            @click="form.openaiCompatibleModel = m"
+                        >
+                            {{ m }}
+                        </button>
+                    </div>
+                </div>
+
                 <UiBox type="warning">
                     <span class="text-xs">{{ $t("aiKeyStorageWarning") }}</span>
                 </UiBox>
@@ -112,11 +144,14 @@ watch(open, (v) => {
 const providerOptions = [
     { label: "Anthropic Claude", value: "anthropic" },
     { label: "OpenAI", value: "openai" },
+    { label: "OpenAI Compatible", value: "openai-compatible" },
 ];
 
 const anthropicRecommended = ["claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"];
 
 const openaiRecommended = ["gpt-5", "gpt-5-mini", "o4-mini"];
+
+const openaiCompatibleRecommended = ["qwen2.5-coder:7b", "llama3.2:3b", "mistral:7b", "deepseek-r1:8b"];
 
 function save() {
     ai.saveSettings({ ...form });
