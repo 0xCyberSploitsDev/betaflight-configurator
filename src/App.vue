@@ -245,6 +245,28 @@ watch(
     display: none;
 }
 
+/* AI assistant field highlight — applied by useAiSettingHighlight when the
+   navigate_to_setting tool targets a specific field. Global (unscoped) so it
+   reaches elements inside scoped tab components. */
+.ai-highlight-flash {
+    animation: ai-highlight-flash 2.6s ease-out;
+    border-radius: 6px;
+}
+@keyframes ai-highlight-flash {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 187, 42, 0);
+        background-color: rgba(255, 187, 42, 0);
+    }
+    12% {
+        box-shadow: 0 0 0 3px rgba(255, 187, 42, 0.85);
+        background-color: rgba(255, 187, 42, 0.22);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 187, 42, 0);
+        background-color: rgba(255, 187, 42, 0);
+    }
+}
+
 /* Mobile top bar — hamburger left, centred wide logo, auto-hides on scroll down. */
 .mobile-topbar {
     display: none;

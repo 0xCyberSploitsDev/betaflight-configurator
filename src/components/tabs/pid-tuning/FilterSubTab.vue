@@ -74,7 +74,7 @@
                 </div>
 
                 <!-- Gyro Lowpass 1 -->
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" data-ai-field="gyro_lowpass_hz">
                     <SettingRow :label="$t('pidTuningGyroLowpass')" :help="$t('pidTuningGyroLowpassHelp')">
                         <USwitch v-model="gyroLowpassEnabled" size="sm" />
                     </SettingRow>
@@ -397,7 +397,7 @@
                 </div>
 
                 <!-- DTerm Lowpass 1 -->
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" data-ai-field="dterm_lowpass_hz">
                     <SettingRow :label="$t('pidTuningDTermLowpass')" :help="$t('pidTuningDTermLowpassHelp')">
                         <USwitch v-model="dtermLowpassEnabled" size="sm" />
                     </SettingRow>

@@ -12,11 +12,31 @@ import { i18n } from "./localization";
 import { pinia } from "./pinia_instance";
 import { useDialogStore } from "../stores/dialog";
 import { registerSW } from "virtual:pwa-register";
-import { isAndroid, isEmbeddedDeployment } from "./utils/checkCompatibility.js";
+import { isAndroid, isEmbeddedDeployment, isTauri } from "./utils/checkCompatibility.js";
 
-// Skip PWA/service-worker on embedded deployments (WebSocket-only host, plain HTTP)
-// and Android native builds where they are unnecessary
-if (!isAndroid() && !isEmbeddedDeployment()) {
+// In the Tauri desktop shell the app is served from bundled local assets, so a
+// service worker adds nothing and its precache actively serves STALE JS after a
+// rebuild (the "prompt" SW never activates without user interaction, and the
+// webview cache survives reinstalls). Tear down any previously-registered SW and
+// purge its caches so each launch runs the freshly bundled code.
+if (isTauri()) {
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+            .getRegistrations()
+            .then((registrations) => registrations.forEach((r) => r.unregister()))
+            .catch((e) => console.warn("[PWA] Failed to unregister service workers", e));
+    }
+    if (typeof caches !== "undefined") {
+        caches
+            .keys()
+            .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+            .catch((e) => console.warn("[PWA] Failed to clear caches", e));
+    }
+}
+
+// Skip PWA/service-worker on embedded deployments (WebSocket-only host, plain HTTP),
+// Android native builds, and the Tauri desktop shell where they are unnecessary
+if (!isAndroid() && !isEmbeddedDeployment() && !isTauri()) {
     const dialogStore = useDialogStore(pinia);
     const updateSW = registerSW({
         onNeedRefresh() {

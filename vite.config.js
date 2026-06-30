@@ -21,6 +21,11 @@ const devHostname = process.env.BF_DEV_HOSTNAME || "local.betaflight.com";
 const certPath = "./local.betaflight.com.pem";
 const keyPath = "./local.betaflight.com-key.pem";
 const tauriDev = process.env.TAURI_DEV === "1";
+// Tauri desktop build: the app loads from bundled local assets, so a service
+// worker is useless and its precache serves STALE JS across rebuilds. Emit a
+// self-destroying SW so any previously-installed worker unregisters itself and
+// purges its caches on next launch — without depending on the (cached) app code.
+const tauriBuild = process.env.TAURI_BUILD === "1";
 const certsExist = !tauriDev && existsSync(certPath) && existsSync(keyPath);
 const serverPort = certsExist ? 8443 : 8080;
 
@@ -157,6 +162,7 @@ export default defineConfig({
         }),
         VitePWA({
             registerType: "prompt",
+            selfDestroying: tauriBuild,
             workbox: {
                 globPatterns: ["**/*.{js,css,html,ico,png,svg,json,mcm,gltf}"],
                 // 5MB

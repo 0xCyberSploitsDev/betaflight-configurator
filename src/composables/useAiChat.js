@@ -4,8 +4,29 @@ import { streamOpenAi } from "@/js/ai/providers/openai";
 import { streamOpenAiCompatible } from "@/js/ai/providers/openai-compatible";
 import { toolDefinitions, executeTool, confirmTool } from "@/js/ai/tools";
 import { DEFAULT_SYSTEM_PROMPT } from "@/js/ai/systemPrompt";
+import { switchTab } from "@/js/tab_switch";
+import { requestHighlight } from "@/js/ai/navigationBus";
 
 const MAX_TOOL_ROUNDS = 6;
+
+/**
+ * Side effect for tools that return a `_navigate` envelope (navigate_to_setting):
+ * switch to the requested tab and ask the UI to highlight the target field.
+ * Pure-data tools stay decoupled from the UI; the composable owns the side effect.
+ */
+function maybeHandleNavigation(result) {
+    if (!result || typeof result !== "object" || !result._navigate || !result.tab) {
+        return;
+    }
+    try {
+        // switchTab is a no-op if we are already on the target tab, so the
+        // highlight still fires below for the field-level case.
+        switchTab(result.tab, { mode: "disconnected" });
+        requestHighlight({ tab: result.tab, subTab: result.subTab, fieldKey: result.fieldKey });
+    } catch (e) {
+        console.warn("[AI] navigate_to_setting side effect failed", e);
+    }
+}
 
 function makeId() {
     return `msg_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -187,6 +208,8 @@ export function useAiChat() {
                     const result = await executeTool(use.name, use.input);
                     const isError = Boolean(result && typeof result === "object" && "error" in result);
 
+                    maybeHandleNavigation(result);
+
                     if (result && typeof result === "object" && result._requiresConfirmation) {
                         needsConfirmation = true;
                         ai.setPendingConfirmation({
@@ -292,6 +315,7 @@ export function useAiChat() {
                 const postResults = await Promise.all(
                     turn.toolUses.map(async (use) => {
                         const r = await executeTool(use.name, use.input);
+                        maybeHandleNavigation(r);
                         const finalResult =
                             r && typeof r === "object" && r._requiresConfirmation
                                 ? await confirmTool(use.name, use.input)
@@ -369,6 +393,7 @@ export function useAiChat() {
                 const postResults = await Promise.all(
                     turn.toolUses.map(async (use) => {
                         const r = await executeTool(use.name, use.input);
+                        maybeHandleNavigation(r);
                         const finalResult =
                             r && typeof r === "object" && r._requiresConfirmation
                                 ? await confirmTool(use.name, use.input)

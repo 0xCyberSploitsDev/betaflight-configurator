@@ -4,6 +4,7 @@ import CONFIGURATOR, { API_VERSION_1_47 } from "@/js/data_storage";
 import MSP from "@/js/msp";
 import MSPCodes from "@/js/msp/MSPCodes";
 import { serial } from "@/js/serial";
+import { getDebugModes } from "@/js/utils/debugModes";
 
 function buildPidProfile() {
     const pids = FC.PIDS;
@@ -181,6 +182,80 @@ const SECTION_GETTERS = {
     sensorConfig: () => FC.SENSOR_CONFIG ?? null,
     failsafeConfig: () => FC.FAILSAFE_CONFIG ?? null,
     batteryConfig: () => FC.BATTERY_CONFIG ?? null,
+    blackbox: () => {
+        const bb = FC.BLACKBOX || {};
+        const apiVersion = FC.CONFIG?.apiVersion ?? "";
+
+        const DEVICE_NAMES = {
+            0: "None (disabled)",
+            1: "Flash (SPI/dataflash on-board)",
+            2: "SD Card",
+            3: "Serial",
+            4: "USB MSC / Virtual",
+        };
+
+        let debugModeName = null;
+        const debugMode = FC.PID_ADVANCED_CONFIG?.debugMode;
+        if (debugMode !== undefined && debugMode !== null) {
+            const modes = getDebugModes(apiVersion);
+            debugModeName = modes[debugMode] ?? `unknown (${debugMode})`;
+        }
+
+        const allFields = [
+            "PID",
+            "RC Commands",
+            "Setpoint",
+            "Battery",
+            "Magnetometer",
+            "Altitude",
+            "RSSI",
+            "Gyro",
+            "Accelerometer",
+            "Debug Log",
+            "Motor",
+            "GPS",
+            "RPM",
+            "Gyro (Unfiltered)",
+        ];
+        if (apiVersion && semver.gte(apiVersion, API_VERSION_1_47)) {
+            allFields.splice(8, 0, "Attitude");
+            allFields.push("Servo");
+        }
+
+        const mask = bb.blackboxDisabledMask ?? 0;
+        const disabledFields = [];
+        for (let i = 0; i < allFields.length; i++) {
+            if (mask & (1 << i)) disabledFields.push(allFields[i]);
+        }
+
+        const rateNum = bb.blackboxRateNum ?? 1;
+        const rateDenom = bb.blackboxRateDenom ?? 1;
+
+        return {
+            supported: bb.supported ?? false,
+            device: bb.blackboxDevice ?? 0,
+            deviceName: DEVICE_NAMES[bb.blackboxDevice] ?? `unknown (${bb.blackboxDevice})`,
+            rateNum,
+            rateDenom,
+            pDenom: bb.blackboxPDenom ?? 0,
+            sampleRate: bb.blackboxSampleRate ?? 0,
+            disabledMask: mask,
+            disabledFields,
+            debugMode: debugMode ?? null,
+            debugModeName,
+            _analysis: [
+                `Logging ${bb.supported ? "supported" : "NOT supported"}.`,
+                `Device: ${DEVICE_NAMES[bb.blackboxDevice] ?? "unknown"}.`,
+                `Sampling ratio: ${rateNum}/${rateDenom}.`,
+                disabledFields.length > 0 ? `Disabled fields: ${disabledFields.join(", ")}.` : null,
+                debugModeName
+                    ? `Debug mode: ${debugModeName}.`
+                    : "Debug mode: not available (read motorAdvanced first).",
+            ]
+                .filter(Boolean)
+                .join(" "),
+        };
+    },
     gpsConfig: () => FC.GPS_CONFIG ?? null,
     gpsData: () => FC.GPS_DATA ?? null,
     vtxConfig: () => FC.VTX_CONFIG ?? null,
@@ -203,6 +278,7 @@ const SECTION_MSP_CODES = {
     sensorConfig: [MSPCodes.MSP_SENSOR_CONFIG],
     failsafeConfig: [MSPCodes.MSP_FAILSAFE_CONFIG],
     batteryConfig: [MSPCodes.MSP_BATTERY_CONFIG],
+    blackbox: [MSPCodes.MSP_BLACKBOX_CONFIG],
     gpsConfig: [MSPCodes.MSP_GPS_CONFIG],
     gpsData: [MSPCodes.MSP_RAW_GPS],
     vtxConfig: [MSPCodes.MSP_VTX_CONFIG],
@@ -256,6 +332,8 @@ const SECTION_DESCRIPTIONS = {
     sensorConfig: "Which physical sensors are enabled.",
     failsafeConfig: "Failsafe behaviour and stage timings.",
     batteryConfig: "Cell count, voltage thresholds, current meter scaling.",
+    blackbox:
+        "Blackbox logging configuration: device type (none/flash/SD/serial/USB MSC), sampling ratio (rateNum/rateDenom), PID decimation (pDenom), sample rate index, disabled debug fields mask, resolved debug mode name. Enriched with human-readable device name and disabled field list.",
     gpsConfig: "GPS protocol / sbas mode.",
     gpsData: "Live GPS fix, sat count, lat/lon.",
     vtxConfig: "VTX band, channel, power level.",
@@ -285,7 +363,9 @@ function isEmptyValue(value) {
 
 export const getFcStateTool = {
     name: "get_fc_state",
-    description: `Read a section of the currently connected flight controller's state. If the section is empty, this tool automatically sends the matching MSP request(s) to the FC and re-reads — so you do NOT need to ask the user to open a specific tab. Just call this tool and trust the result.
+    description: `Read the current values of one section of the flight controller's state over MSP. Returns numbers and settings as data. If the section is empty, this tool automatically sends the matching MSP request(s) and re-reads.
+
+This tool reads data only — it does not navigate between tabs. For navigation requests (navigate, go to, open, show me, where is, and French equivalents), use navigate_to_setting instead.
 
 Available sections:
 ${SECTION_DESCRIPTION_BLOCK}`,

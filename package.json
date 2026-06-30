@@ -22,7 +22,7 @@
     "android:release": "vite build && node capacitor.config.generator.mjs && npx cap build android --release",
     "tauri:dev": "node scripts/check-tauri-prereqs.mjs && cross-env TAURI_DEV=1 tauri dev",
     "tauri:build": "node scripts/check-tauri-prereqs.mjs && tauri build",
-    "tauri:prebuild": "node scripts/sync-tauri-version.mjs && vite build",
+    "tauri:prebuild": "node scripts/sync-tauri-version.mjs && cross-env TAURI_BUILD=1 vite build",
     "cf:dev": "wrangler dev",
     "cf:build": "vite build",
     "cf:deploy": "vite build && wrangler deploy",

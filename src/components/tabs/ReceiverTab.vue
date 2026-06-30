@@ -46,7 +46,7 @@
                     <!-- Receiver Mode -->
                     <div class="receiver">
                         <UiBox :title="$t('configurationReceiver')">
-                            <SettingRow :label="$t('configurationReceiverMode')">
+                            <SettingRow data-ai-field="receiver_mode" :label="$t('configurationReceiverMode')">
                                 <USelect
                                     :items="rxModeOptions"
                                     v-model="selectedRxMode"
@@ -60,7 +60,7 @@
                                 <UiBox highlight>
                                     <p v-html="$t('configurationSerialRXHelp')"></p>
                                 </UiBox>
-                                <SettingRow :label="$t('configurationSerialRX')">
+                                <SettingRow data-ai-field="serialrx_provider" :label="$t('configurationSerialRX')">
                                     <USelectMenu
                                         v-model="rxConfig.serialrx_provider"
                                         value-key="value"
@@ -86,7 +86,7 @@
                                 <UiBox highlight>
                                     <p v-html="$t('configurationSpiRxHelp')"></p>
                                 </UiBox>
-                                <SettingRow :label="$t('configurationSpiRX')">
+                                <SettingRow data-ai-field="spi_rx_protocol" :label="$t('configurationSpiRX')">
                                     <USelectMenu
                                         v-model="rxConfig.rxSpiProtocol"
                                         value-key="value"
@@ -136,7 +136,7 @@
                             :help="$t('configurationTelemetryHelp')"
                             class="col-span-2"
                         >
-                            <SettingRow :label="$t('featureTELEMETRY')">
+                            <SettingRow data-ai-field="telemetry" :label="$t('featureTELEMETRY')">
                                 <USwitch
                                     :model-value="isTelemetryEnabled"
                                     @update:model-value="(checked) => toggleTelemetry(checked)"
@@ -147,13 +147,13 @@
                         <!-- RSSI -->
                         <UiBox :title="$t('configurationRSSI')" :help="$t('configurationRSSIHelp')" class="col-span-3">
                             <div class="flex justify-between gap-2 flex-wrap">
-                                <SettingRow :label="$t('featureRSSI_ADC')">
+                                <SettingRow data-ai-field="rssi_adc" :label="$t('featureRSSI_ADC')">
                                     <USwitch
                                         :model-value="isRssiAdcEnabled"
                                         @update:model-value="(checked) => toggleRssiAdc(checked)"
                                     />
                                 </SettingRow>
-                                <SettingRow :label="$t('receiverRssiChannel')">
+                                <SettingRow data-ai-field="rssi_channel" :label="$t('receiverRssiChannel')">
                                     <USelect
                                         :items="[
                                             { label: $t('receiverRssiChannelDisabledOption'), value: 0 },
@@ -170,7 +170,7 @@
                         </UiBox>
 
                         <!-- Channel Map -->
-                        <UiBox :title="$t('receiverChannelMap')" class="col-span-1">
+                        <UiBox data-ai-field="channel_map" :title="$t('receiverChannelMap')" class="col-span-1">
                             <SettingRow>
                                 <UFieldGroup>
                                     <UInput
@@ -194,7 +194,7 @@
                         </UiBox>
 
                         <!-- Stick settings -->
-                        <UiBox :title="$t('receiverStickRange')" class="col-span-6">
+                        <UiBox data-ai-field="stick_range" :title="$t('receiverStickRange')" class="col-span-6">
                             <div class="grid grid-cols-3 gap-2">
                                 <SettingColumn
                                     :label="$t('receiverStickMin')"
@@ -300,7 +300,7 @@
                     </div>
 
                     <!-- RC Smoothing -->
-                    <UiBox :title="$t('receiverRcSmoothing')" class="col-span-6">
+                    <UiBox data-ai-field="rc_smoothing" :title="$t('receiverRcSmoothing')" class="col-span-6">
                         <SettingRow :label="$t('receiverRcSmoothing')">
                             <USwitch
                                 :model-value="rxConfig.rcSmoothing === 1"
@@ -530,6 +530,7 @@ import * as d3 from "d3";
 import UiBox from "../elements/UiBox.vue";
 import SettingRow from "../elements/SettingRow.vue";
 import SettingColumn from "../elements/SettingColumn.vue";
+import { useAiSettingHighlight } from "@/composables/useAiSettingHighlight";
 
 const t = (key) => i18n.getMessage(key);
 const fcStore = useFlightControllerStore();
@@ -537,6 +538,9 @@ const connectionStore = useConnectionStore();
 const navigationStore = useNavigationStore();
 const { reboot } = useReboot();
 const { addInterval, removeInterval } = useInterval();
+
+// Lets the AI assistant scroll to + flash a setting via navigate_to_setting.
+useAiSettingHighlight("receiver");
 
 // Template refs
 const modelPreviewContainer = ref(null);

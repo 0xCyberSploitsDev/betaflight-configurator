@@ -4,6 +4,7 @@ import { listBetaflightDocsTool } from "./listBetaflightDocs.js";
 import { getConnectionInfoTool } from "./getConnectionInfo.js";
 import { setParameterTool, confirmSetParameter } from "./setParameter.js";
 import { saveToEepromTool, confirmSaveToEeprom } from "./saveToEeprom.js";
+import { navigateToSettingTool } from "./navigateToSetting.js";
 
 export const ALL_TOOLS = [
     getConnectionInfoTool,
@@ -12,6 +13,7 @@ export const ALL_TOOLS = [
     fetchBetaflightDocsTool,
     setParameterTool,
     saveToEepromTool,
+    navigateToSettingTool,
 ];
 
 const TOOL_BY_NAME = new Map(ALL_TOOLS.map((t) => [t.name, t]));

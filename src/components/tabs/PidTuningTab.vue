@@ -147,6 +147,7 @@ import { useNavigationStore } from "@/stores/navigation";
 import { useDialog } from "@/composables/useDialog";
 import { useTranslation } from "i18next-vue";
 import { gui_log } from "@/js/gui_log";
+import { useAiSettingHighlight } from "@/composables/useAiSettingHighlight";
 
 const { t } = useTranslation();
 const pidTuningStore = usePidTuningStore();
@@ -222,6 +223,16 @@ const localRateProfileName = computed({
 
 // hasChanges is owned by the Pinia store
 const hasChanges = computed(() => pidTuningStore.hasChanges);
+
+// Let the AI assistant (navigate_to_setting tool) open the right sub-tab and
+// highlight a field. Fields are tagged with `data-ai-field="..."` in the sub-tabs.
+useAiSettingHighlight("pid_tuning", {
+    onSubTab: (subTab) => {
+        if (["pid", "rates", "filter"].includes(subTab)) {
+            activeSubtab.value = subTab;
+        }
+    },
+});
 
 // MSP Data Loading
 async function loadData() {

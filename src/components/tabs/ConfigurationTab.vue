@@ -18,6 +18,7 @@
                             <UInput readonly disabled :value="gyroFrequencyDisplay" class="min-w-40" />
                         </SettingRow>
                         <SettingRow
+                            data-ai-field="pid_process_denom"
                             :label="$t('configurationPidProcessDenom')"
                             :help="$t('configurationPidProcessDenomHelp')"
                         >
@@ -31,10 +32,15 @@
 
                     <!-- PERSONALIZATION -->
                     <UiBox :title="$t('configurationPersonalization')">
-                        <SettingRow :label="$t('craftName')" :help="$t('configurationCraftNameHelp')">
+                        <SettingRow
+                            data-ai-field="craft_name"
+                            :label="$t('craftName')"
+                            :help="$t('configurationCraftNameHelp')"
+                        >
                             <UInput v-model="craftName" maxlength="16" class="min-w-40" />
                         </SettingRow>
                         <SettingRow
+                            data-ai-field="pilot_name"
                             :label="$t('configurationPilotName')"
                             :help="$t('configurationPilotNameHelp')"
                             v-if="showPilotName"
@@ -45,7 +51,7 @@
 
                     <!-- CAMERA -->
                     <UiBox :title="$t('configurationCamera')" v-if="accHardwareEnabled">
-                        <SettingRow :label="$t('configurationFpvCamAngleDegrees')">
+                        <SettingRow data-ai-field="fpv_cam_angle" :label="$t('configurationFpvCamAngleDegrees')">
                             <UInputNumber
                                 v-model="fpvCamAngleDegrees"
                                 :step="1"
@@ -64,7 +70,11 @@
                         :help="$t('configurationArmingHelp')"
                         v-if="accHardwareEnabled"
                     >
-                        <SettingRow :label="$t('configurationSmallAngle')" :help="$t('configurationSmallAngleHelp')">
+                        <SettingRow
+                            data-ai-field="small_angle"
+                            :label="$t('configurationSmallAngle')"
+                            :help="$t('configurationSmallAngleHelp')"
+                        >
                             <UInputNumber
                                 v-model="armingConfig.small_angle"
                                 :step="1"
@@ -76,6 +86,7 @@
                             />
                         </SettingRow>
                         <SettingRow
+                            data-ai-field="gyro_cal_on_first_arm"
                             :label="$t('configurationGyroCalOnFirstArm')"
                             :help="$t('configurationGyroCalOnFirstArmHelp')"
                             v-if="showGyroCalOnFirstArm"
@@ -83,6 +94,7 @@
                             <USwitch v-model="armingConfig.gyro_cal_on_first_arm_bool" />
                         </SettingRow>
                         <SettingRow
+                            data-ai-field="auto_disarm_delay"
                             :label="$t('configurationAutoDisarmDelay')"
                             :help="$t('configurationAutoDisarmDelayHelp')"
                             v-if="showAutoDisarmDelay"
@@ -124,6 +136,7 @@
                     <!-- DSHOT BEACON -->
                     <UiBox :title="$t('configurationDshotBeeper')" :help="$t('configurationDshotBeaconHelp')">
                         <SettingRow
+                            data-ai-field="dshot_beacon_tone"
                             :label="$t('configurationDshotBeaconTone')"
                             :help="$t('configurationUseDshotBeeper')"
                         >
@@ -213,6 +226,7 @@ import { updateTabList } from "../../js/utils/updateTabList";
 import WikiButton from "../elements/WikiButton.vue";
 import UiBox from "../elements/UiBox.vue";
 import SettingRow from "../elements/SettingRow.vue";
+import { useAiSettingHighlight } from "@/composables/useAiSettingHighlight";
 
 export default defineComponent({
     name: "ConfigurationTab",
@@ -226,6 +240,9 @@ export default defineComponent({
         const navigationStore = useNavigationStore();
         const fcStore = useFlightControllerStore();
         const { reboot } = useReboot();
+
+        // Lets the AI assistant scroll to + flash a setting via navigate_to_setting.
+        useAiSettingHighlight("configuration");
 
         const pidAdvancedConfig = reactive({
             pid_process_denom: 1,

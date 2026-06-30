@@ -633,7 +633,7 @@
                 <div class="flex flex-col gap-2">
                     <span class="text-sm font-semibold" v-html="$t('pidTuningFeedforwardGroup')"></span>
                     <div class="flex flex-wrap items-end gap-3 pl-4">
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="feedforward_jitter_factor">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningFeedforwardJitter')"></span>
                                 <HelpIcon :text="$t('pidTuningFeedforwardJitterHelp')" />
@@ -648,7 +648,7 @@
                                 class="w-16"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="feedforward_smooth_factor">
                             <div class="flex items-center gap-1">
                                 <span
                                     class="text-xs text-dimmed"
@@ -666,7 +666,7 @@
                                 class="w-16"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="feedforward_averaging">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningFeedforwardAveraging')"></span>
                                 <HelpIcon :text="$t('pidTuningFeedforwardAveragingHelp')" />
@@ -678,7 +678,7 @@
                                 class="w-24"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="feedforward_boost">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningFeedforwardBoost')"></span>
                                 <HelpIcon :text="$t('pidTuningFeedforwardBoostHelp')" />
@@ -693,7 +693,7 @@
                                 class="w-16"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="feedforward_max_rate_limit">
                             <div class="flex items-center gap-1">
                                 <span
                                     class="text-xs text-dimmed"
@@ -711,7 +711,7 @@
                                 class="w-16"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="feedforward_transition">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningFeedforwardTransition')"></span>
                                 <HelpIcon :text="$t('pidTuningFeedforwardTransitionHelp')" />
@@ -733,11 +733,11 @@
                 <div class="flex flex-col gap-2">
                     <span class="text-sm font-semibold" v-html="$t('pidTuningTpaGroup')"></span>
                     <div class="flex flex-wrap items-end gap-3 pl-4">
-                        <div v-if="usesAdvancedTpa" class="flex flex-col gap-1">
+                        <div v-if="usesAdvancedTpa" class="flex flex-col gap-1" data-ai-field="tpa_mode">
                             <span class="text-xs text-dimmed">{{ $t("pidTuningTPAMode") }}</span>
                             <USelect v-model="tpaMode" :items="tpaModeItems" size="xs" class="w-24" />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="tpa_rate">
                             <span class="text-xs text-dimmed">{{ $t("pidTuningTPARate") }}</span>
                             <UInputNumber
                                 v-model="tpaRate"
@@ -749,7 +749,7 @@
                                 class="w-16"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="tpa_breakpoint">
                             <span class="text-xs text-dimmed">{{ $t("pidTuningTPABreakPoint") }}</span>
                             <UInputNumber
                                 v-model="tpaBreakpoint"
@@ -766,7 +766,7 @@
                 </div>
 
                 <!-- I-term Relax -->
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" data-ai-field="iterm_relax">
                     <SettingRow :label="$t('pidTuningItermRelax')" :help="$t('pidTuningItermRelaxHelp')">
                         <USwitch v-model="itermRelaxEnabled" size="sm" />
                     </SettingRow>
@@ -789,7 +789,7 @@
                                 class="w-24"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="iterm_relax_cutoff">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningItermRelaxCutoff')"></span>
                                 <HelpIcon :text="$t('pidTuningItermRelaxCutoffHelp')" />
@@ -808,7 +808,7 @@
                 </div>
 
                 <!-- Anti Gravity -->
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" data-ai-field="anti_gravity_gain">
                     <SettingRow :label="$t('pidTuningAntiGravity')" :help="$t('pidTuningAntiGravityHelp')">
                         <USwitch v-model="antiGravityEnabled" size="sm" />
                     </SettingRow>
@@ -855,7 +855,11 @@
                 </div>
 
                 <!-- I-term Rotation -->
-                <SettingRow :label="$t('pidTuningItermRotation')" :help="$t('pidTuningItermRotationHelp')">
+                <SettingRow
+                    :label="$t('pidTuningItermRotation')"
+                    :help="$t('pidTuningItermRotationHelp')"
+                    data-ai-field="iterm_rotation"
+                >
                     <USwitch v-model="itermRotationEnabled" size="sm" />
                 </SettingRow>
 
@@ -863,7 +867,7 @@
                 <div class="flex flex-col gap-2">
                     <span class="text-sm font-semibold" v-html="$t('pidTuningDMaxSettingTitle')"></span>
                     <div class="flex flex-wrap items-end gap-3 pl-4">
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="d_max_gain">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningDMaxGain')"></span>
                                 <HelpIcon :text="$t('pidTuningDMaxGainHelp')" />
@@ -878,7 +882,7 @@
                                 class="w-16"
                             />
                         </div>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1" data-ai-field="d_max_advance">
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-dimmed" v-html="$t('pidTuningDMaxAdvance')"></span>
                                 <HelpIcon :text="$t('pidTuningDMaxAdvanceHelp')" />
@@ -899,7 +903,11 @@
 
             <!-- Motor Settings -->
             <UiBox :title="$t('pidTuningMotorSettings')" type="neutral">
-                <SettingRow :label="$t('pidTuningThrottleBoost')" :help="$t('pidTuningThrottleBoostHelp')">
+                <SettingRow
+                    :label="$t('pidTuningThrottleBoost')"
+                    :help="$t('pidTuningThrottleBoostHelp')"
+                    data-ai-field="throttle_boost"
+                >
                     <UInputNumber
                         v-model="advancedTuning.throttleBoost"
                         :step="1"
@@ -911,7 +919,11 @@
                     />
                 </SettingRow>
 
-                <SettingRow :label="$t('pidTuningMotorOutputLimit')" :help="$t('pidTuningMotorLimitHelp')">
+                <SettingRow
+                    :label="$t('pidTuningMotorOutputLimit')"
+                    :help="$t('pidTuningMotorLimitHelp')"
+                    data-ai-field="motor_output_limit"
+                >
                     <UInputNumber
                         v-model="advancedTuning.motorOutputLimit"
                         :step="1"
@@ -926,6 +938,7 @@
                 <SettingRow
                     :label="dshotTelemetryEnabled ? $t('pidTuningIdleMinRpm') : $t('pidTuningIdleMinRpmDisabled')"
                     :help="$t('pidTuningIdleMinRpmHelp')"
+                    data-ai-field="idle_min_rpm"
                 >
                     <UInputNumber
                         v-model="advancedTuning.idleMinRpm"
@@ -940,7 +953,7 @@
                 </SettingRow>
 
                 <!-- VBat Sag Compensation -->
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" data-ai-field="vbat_sag_compensation">
                     <SettingRow
                         :label="$t('pidTuningVbatSagCompensation')"
                         :help="$t('pidTuningVbatSagCompensationHelp')"
@@ -963,7 +976,7 @@
                 </div>
 
                 <!-- Thrust Linearization -->
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" data-ai-field="thrust_linearization">
                     <SettingRow
                         :label="$t('pidTuningThrustLinearization')"
                         :help="$t('pidTuningThrustLinearizationHelp')"
@@ -1000,6 +1013,7 @@
                 <SettingRow
                     :label="$t('pidTuningAcroTrainerAngleLimit')"
                     :help="$t('pidTuningAcroTrainerAngleLimitHelp')"
+                    data-ai-field="acro_trainer_angle_limit"
                 >
                     <UInputNumber
                         v-model="advancedTuning.acroTrainerAngleLimit"
