@@ -5,6 +5,16 @@ import { getConnectionInfoTool } from "./getConnectionInfo.js";
 import { setParameterTool, confirmSetParameter } from "./setParameter.js";
 import { saveToEepromTool, confirmSaveToEeprom } from "./saveToEeprom.js";
 import { navigateToSettingTool } from "./navigateToSetting.js";
+import { runCliCommandTool, confirmRunCliCommand } from "./runCliCommand.js";
+import {
+    calibrateAccelerometerTool,
+    confirmCalibrateAccelerometer,
+    calibrateMagnetometerTool,
+    confirmCalibrateMagnetometer,
+    rebootFcTool,
+    confirmRebootFc,
+} from "./fcActions.js";
+import { getModesTool, setModeRangeTool, confirmSetModeRange } from "./modes.js";
 
 export const ALL_TOOLS = [
     getConnectionInfoTool,
@@ -14,6 +24,12 @@ export const ALL_TOOLS = [
     setParameterTool,
     saveToEepromTool,
     navigateToSettingTool,
+    runCliCommandTool,
+    calibrateAccelerometerTool,
+    calibrateMagnetometerTool,
+    rebootFcTool,
+    getModesTool,
+    setModeRangeTool,
 ];
 
 const TOOL_BY_NAME = new Map(ALL_TOOLS.map((t) => [t.name, t]));
@@ -21,6 +37,11 @@ const TOOL_BY_NAME = new Map(ALL_TOOLS.map((t) => [t.name, t]));
 const CONFIRM_BY_NAME = {
     set_parameter: confirmSetParameter,
     save_to_eeprom: confirmSaveToEeprom,
+    run_cli_command: confirmRunCliCommand,
+    calibrate_accelerometer: confirmCalibrateAccelerometer,
+    calibrate_magnetometer: confirmCalibrateMagnetometer,
+    reboot_fc: confirmRebootFc,
+    set_mode_range: confirmSetModeRange,
 };
 
 export function toolDefinitions() {
